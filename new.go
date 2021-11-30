@@ -1,8 +1,11 @@
 package containerh
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 
+	docker "github.com/docker/docker/client"
 	"github.com/philips-software/go-hsdp-api/cartel"
 )
 
@@ -20,7 +23,15 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Docker client
+	dockerClient, err := docker.NewClientWithOpts(docker.FromEnv)
+	if err != nil {
+		fmt.Printf("Error creating client (%s): %v\n", os.Getenv("DOCKER_HOST"), err)
+		return nil, err
+	}
+
 	c.cartelClient = cartelClient
 	c.Instances = &InstancesService{Client: c}
+	c.CLI = &CLIServices{Client: c, LocalDockerClient: dockerClient}
 	return c, nil
 }

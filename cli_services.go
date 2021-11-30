@@ -1,4 +1,4 @@
-package docker
+package containerh
 
 import (
 	"context"
@@ -9,8 +9,12 @@ import (
 	"github.com/docker/distribution/reference"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/philips-software/go-hsdp-api/cartel"
 )
+
+type CLIServices struct {
+	*Client
+	LocalDockerClient *client.Client
+}
 
 type ImageConfig struct {
 	Image    string `json:"dockerImage"`
@@ -18,22 +22,7 @@ type ImageConfig struct {
 	Password string `json:"dockerPassword"`
 }
 
-type Container struct {
-	ClusterID         string
-	LocalDockerClient *client.Client
-	EnableFluentd     bool
-	Cartel            *cartel.Client
-}
-
-func (c *Container) GetAllInstances(ctx context.Context) ([]cartel.InstanceDetails, error) {
-	instances, _, err := c.Cartel.GetAllInstances()
-	if instances == nil {
-		return []cartel.InstanceDetails{}, err
-	}
-	return *instances, err
-}
-
-func (c *Container) GetWorkerInfo(ctx context.Context) (types.Info, error) {
+func (c *CLIServices) Info(ctx context.Context) (types.Info, error) {
 	info, err := c.LocalDockerClient.Info(ctx)
 	if err != nil {
 		return types.Info{}, fmt.Errorf("dockerClient.Info: %w", err)
@@ -41,15 +30,15 @@ func (c *Container) GetWorkerInfo(ctx context.Context) (types.Info, error) {
 	return info, nil
 }
 
-func (c *Container) ContainerList(ctx context.Context) ([]types.Container, error) {
+func (c *CLIServices) ContainerList(ctx context.Context) ([]types.Container, error) {
 	return c.LocalDockerClient.ContainerList(context.Background(), types.ContainerListOptions{})
 }
 
-func (c *Container) ContainerKill(ctx context.Context, id string) error {
+func (c *CLIServices) ContainerKill(ctx context.Context, id string) error {
 	return c.LocalDockerClient.ContainerKill(context.Background(), id, "")
 }
 
-func (c *Container) DockerLogin(ctx context.Context, config ImageConfig) ([]byte, error) {
+func (c *CLIServices) DockerLogin(ctx context.Context, config ImageConfig) ([]byte, error) {
 	ref, err := reference.ParseNormalizedNamed(config.Image)
 	if err != nil {
 		return []byte{}, err
@@ -66,7 +55,7 @@ func (c *Container) DockerLogin(ctx context.Context, config ImageConfig) ([]byte
 	return output, err
 }
 
-func (c *Container) DockerCommand(ctx context.Context, args []string) ([]byte, error) {
+func (c *CLIServices) DockerCommand(ctx context.Context, args []string) ([]byte, error) {
 	path, err := exec.LookPath("docker")
 	if err != nil {
 		return []byte{}, err

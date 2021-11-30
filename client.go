@@ -9,4 +9,5 @@ type Client struct {
 	config       Config
 
 	Instances *InstancesService
+	CLI       *CLIServices
 }
