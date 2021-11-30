@@ -6,23 +6,24 @@ import (
 	"os"
 
 	docker "github.com/docker/docker/client"
-	"github.com/philips-software/go-hsdp-api/cartel"
 )
 
 func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	c := &Client{
 		config: config,
 	}
-	cartelClient, err := cartel.NewClient(httpClient, &cartel.Config{
-		Region:     config.Region,
-		Token:      config.CartelKey,
-		Secret:     config.CartelSecret,
-		DebugLog:   config.DebugLog,
-		SkipVerify: true,
-	})
-	if err != nil {
-		return nil, err
-	}
+	/*
+		cartelClient, err := cartel.NewClient(httpClient, &cartel.Config{
+			Region:     config.Region,
+			Token:      config.CartelKey,
+			Secret:     config.CartelSecret,
+			DebugLog:   config.DebugLog,
+			SkipVerify: true,
+		})
+		if err != nil {
+			return nil, err
+		}
+	*/
 	// Docker client
 	dockerClient, err := docker.NewClientWithOpts(docker.FromEnv)
 	if err != nil {
@@ -30,7 +31,7 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 		return nil, err
 	}
 
-	c.cartelClient = cartelClient
+	//c.cartelClient = cartelClient
 	c.Instances = &InstancesService{Client: c}
 	c.CLI = &CLIServices{Client: c, LocalDockerClient: dockerClient}
 	return c, nil

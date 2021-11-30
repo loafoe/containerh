@@ -2,6 +2,7 @@ package containerh
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/containerd/containerd"
 	"github.com/philips-software/go-hsdp-api/cartel"
@@ -36,13 +37,13 @@ func (c *Client) Version(ctx context.Context) (Version, error) {
 }
 
 func (c *Client) Pull(ctx context.Context, imageName string, opts ...containerd.RemoteOpt) (containerd.Image, error) {
-	return nil, nil
+	return nil, fmt.Errorf("pull not implemented yet")
 }
 
 func (c *Client) NewContainer(ctx context.Context, containerName string, runtime containerd.NewContainerOpts, snapshot containerd.NewContainerOpts, spec containerd.NewContainerOpts) (containerd.Container, error) {
-	return nil, nil
+	return nil, fmt.Errorf("newContainer not implemented yet")
 }
 
 func (c *Client) LoadContainer(ctx context.Context, id string) (containerd.Container, error) {
-	return nil, nil
+	return nil, fmt.Errorf("loadContainer not implemented yet")
 }
