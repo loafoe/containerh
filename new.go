@@ -2,6 +2,7 @@ package containerh
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -11,6 +12,14 @@ import (
 func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 	c := &Client{
 		config: config,
+	}
+	if config.DebugLog != "" {
+		f, err := os.OpenFile(config.DebugLog, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Printf("error opening file: %v", err)
+		} else {
+			log.SetOutput(f)
+		}
 	}
 	/*
 		cartelClient, err := cartel.NewClient(httpClient, &cartel.Config{
