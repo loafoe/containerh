@@ -11,10 +11,11 @@ func NewClient(httpClient *http.Client, config Config) (*Client, error) {
 		config: config,
 	}
 	cartelClient, err := cartel.NewClient(httpClient, &cartel.Config{
-		Region:   config.Region,
-		Token:    config.CartelKey,
-		Secret:   config.CartelSecret,
-		DebugLog: config.DebugLog,
+		Region:     config.Region,
+		Token:      config.CartelKey,
+		Secret:     config.CartelSecret,
+		DebugLog:   config.DebugLog,
+		SkipVerify: true,
 	})
 	if err != nil {
 		return nil, err
